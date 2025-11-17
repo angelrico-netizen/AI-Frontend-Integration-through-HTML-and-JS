@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+    <title>FitTrack AI Chat</title>
+</head>
+<body>
+    <div class="card" style="max-width:600px;">
+        <h1>AI Coach</h1>
+        <div id="chat-window">
+            <p>Welcome! Ask me anything about fitness, workouts, or nutrition.</p>
+        </div>
+        <input type="text" id="chat-input" placeholder="Type a message..." style="margin-bottom:8px;">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
+    <script>
+        const BACKEND_URL = "http://localhost:3000/api/ai/ask"; // replace with your local IP if testing on mobile
+
+        async function sendToAI(userId, userText) {
+            try {
+                const res = await fetch(BACKEND_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ userId, message: userText })
+                });
+                const data = await res.json();
+                if (!data.success) throw new Error(data.response);
+                return data.response;
+            } catch (err) {
+                console.error("AI Error:", err);
+                return "Sorry, the AI is unavailable right now.";
+            }
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const chat = document.getElementById('chat-window');
+            const text = input.value.trim();
+            if (!text) return;
+
+            // Show user message
+            const userMsg = document.createElement('p');
+            userMsg.style.color = '#A8E6CF';
+            userMsg.textContent = "You: " + text;
+            chat.appendChild(userMsg);
+
+            // Show loading placeholder
+            const botMsg = document.createElement('p');
+            botMsg.style.color = '#bfead8';
+            botMsg.textContent = "AI: ...loading";
+            chat.appendChild(botMsg);
+            chat.scrollTop = chat.scrollHeight;
+
+            // Call backend AI
+            const aiResponse = await sendToAI("demo-user", text);
+
+            // Update bot message
+            botMsg.textContent = "AI: " + aiResponse;
+            chat.scrollTop = chat.scrollHeight;
+
+            input.value = '';
+        }
+    </script>
+
+</body>
+</html>
