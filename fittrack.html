@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitMind AI Chatbot</title>
+    <style>
+             /* ===========================
+        Global Styles
+        ========================= */
+             * {
+                 box-sizing: border-box;
+                 margin: 0;
+                 padding: 0;
+             }
+
+             body {
+                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                 background-color: #F0FFF4;
+                 display: flex;
+                 flex-direction: column;
+                 height: 100vh;
+                 color: #111;
+             }
+
+             header {
+                 background-color: #A8E6CF;
+                 padding: 15px 10px;
+                 text-align: center;
+                 font-weight: bold;
+                 font-size: 1.4rem;
+                 color: #000;
+                 border-bottom: 2px solid #333;
+             }
+
+             main {
+                 flex: 1;
+                 display: flex;
+                 flex-direction: column;
+                 padding: 10px;
+                 background-color: #F0FFF4;
+             }
+
+             /* ===========================
+        Canned Questions (quick user prompts)
+        ========================= */
+             .canned-questions {
+                 display: flex;
+                 flex-wrap: wrap;
+                 gap: 6px;
+                 margin-bottom: 10px;
+             }
+
+                 .canned-questions button {
+                     background-color: #333;
+                     color: #A8E6CF;
+                     border: none;
+                     border-radius: 8px;
+                     padding: 6px 12px;
+                     cursor: pointer;
+                     font-size: 0.9rem;
+                     transition: 0.2s;
+                 }
+
+                     .canned-questions button:hover {
+                         background-color: #555;
+                     }
+
+             /* ===========================
+        Chat container styles
+        ========================= */
+             .chat-container {
+                 flex: 1;
+                 display: flex;
+                 flex-direction: column;
+                 gap: 10px;
+                 padding: 10px;
+                 border-radius: 10px;
+                 background-color: #ffffff;
+                 overflow-y: auto;
+                 border: 1px solid #ccc;
+             }
+
+             .message {
+                 max-width: 70%;
+                 padding: 12px 16px;
+                 border-radius: 12px;
+                 word-wrap: break-word;
+                 box-shadow: 0px 1px 4px rgba(0,0,0,0.2);
+                 animation: fadeIn 0.3s ease;
+             }
+
+             .user {
+                 background-color: #333;
+                 color: #A8E6CF;
+                 align-self: flex-end;
+             }
+
+             .ai {
+                 background-color: #A8E6CF;
+                 color: #000;
+                 align-self: flex-start;
+             }
+
+             .response-meta {
+                 font-size: 10px;
+                 color: #555;
+                 margin-top: 4px;
+             }
+
+             /* ===========================
+        Support Buttons below AI messages
+        ========================= */
+             .support-buttons {
+                 display: flex;
+                 gap: 6px;
+                 margin-top: 6px;
+             }
+
+                 .support-buttons button {
+                     padding: 3px 8px;
+                     border: none;
+                     border-radius: 6px;
+                     cursor: pointer;
+                     font-size: 0.8rem;
+                     transition: 0.2s;
+                 }
+
+                     .support-buttons button:hover {
+                         opacity: 0.8;
+                     }
+
+             /* ===========================
+        Input area for user
+        ========================= */
+             .input-area {
+                 display: flex;
+                 gap: 6px;
+                 margin-top: 10px;
+             }
+
+                 .input-area input {
+                     flex: 1;
+                     padding: 10px;
+                     border-radius: 8px;
+                     border: 1px solid #333;
+                     font-size: 1rem;
+                 }
+
+                 .input-area button {
+                     padding: 10px 14px;
+                     border-radius: 8px;
+                     border: none;
+                     background-color: #333;
+                     color: #A8E6CF;
+                     font-weight: bold;
+                     cursor: pointer;
+                     transition: 0.2s;
+                 }
+
+                     .input-area button:disabled {
+                         opacity: 0.5;
+                         cursor: not-allowed;
+                     }
+
+                     .input-area button:hover:not(:disabled) {
+                         background-color: #555;
+                     }
+
+             /* ===========================
+        Animations
+        ========================= */
+             @keyframes fadeIn {
+                 from {
+                     opacity: 0;
+                 }
+
+                 to {
+                     opacity: 1;
+                 }
+             }
+
+             @media (max-width: 600px) {
+                 .message {
+                     max-width: 90%;
+                 }
+
+                 .canned-questions button {
+                     font-size: 0.8rem;
+                 }
+             }
+    </style>
+</head>
+<body>
+
+    <header>FitMind AI Chatbot</header>
+
+    <main>
+        <!-- Canned questions for quick access -->
+        <div class="canned-questions">
+            <button onclick="fillQuestion('Create a beginner workout plan for me')">Beginner Workout</button>
+            <button onclick="fillQuestion('Suggest reps/sets for my goals')">Reps/Sets Advice</button>
+            <button onclick="fillQuestion('What foods/diets are best for my weight')">Nutrition Advice</button>
+            <button onclick="fillQuestion('Provide calorie and meal composition for foods')">Calorie Info</button>
+            <button onclick="fillQuestion('Give me motivation and support')">Motivation</button>
+        </div>
+
+        <!-- Chat messages appear here -->
+        <div class="chat-container" id="chatContainer"></div>
+
+        <!-- User input area -->
+        <div class="input-area">
+            <input type="text" id="userInput" placeholder="Ask FitMind AI about workouts, nutrition, or motivation...">
+            <button id="sendBtn" onclick="sendMessage()">Send</button>
+            <button onclick="clearChat()">Clear</button>
+        </div>
+    </main>
+
+    <script>
+        // =====================================
+        // FitMind AI - Front-End Only Integration
+        // =====================================
+
+        // --- OpenAI API key (local demo only) ---
+        const OPENAI_API_KEY = "INSERT API KEY HERE";
+
+        // References to DOM elements
+        const chatContainer = document.getElementById('chatContainer');
+        const userInput = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
+
+        // Array to store conversation history
+        let conversation = [];
+
+        // -------------------
+        // Helper Functions
+        // -------------------
+
+        // Fill input box with a canned question when clicked
+        function fillQuestion(text) { userInput.value = text; }
+
+        // Clear the chat container and reset conversation
+        function clearChat() { conversation = []; chatContainer.innerHTML = ''; }
+
+        // Add a chat message to the container
+        // sender = 'user' or 'ai', wordCount is optional for AI messages
+        function addMessage(text, sender, wordCount = 0) {
+            const msgDiv = document.createElement('div');
+            msgDiv.classList.add('message', sender);
+            msgDiv.innerHTML = text;
+
+            if (sender === 'ai') {
+                // Show word count and support buttons for AI messages
+                const metaDiv = document.createElement('div');
+                metaDiv.classList.add('response-meta');
+                metaDiv.innerHTML = `Word count: ${wordCount}`;
+
+                const supportDiv = document.createElement('div');
+                supportDiv.classList.add('support-buttons');
+                supportDiv.innerHTML = `
+                <button onclick="alert('Thanks for supporting!')">Support</button>
+                <button onclick="alert('Thanks for feedback!')">Don't Support</button>
+            `;
+                msgDiv.appendChild(metaDiv);
+                msgDiv.appendChild(supportDiv);
+            }
+
+            chatContainer.appendChild(msgDiv);
+            // Auto-scroll to the newest message
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        // -------------------
+        // Send Message to OpenAI
+        // -------------------
+        async function sendMessage() {
+            const text = userInput.value.trim();
+            if (!text) return;
+
+            // Display user's message in chat
+            addMessage(text, 'user');
+            conversation.push({ role: 'user', content: text });
+            userInput.value = '';
+            sendBtn.disabled = true; // Disable send while waiting for AI
+
+            // Show loading placeholder
+            const loadingMessage = document.createElement('div');
+            loadingMessage.classList.add('message', 'ai');
+            loadingMessage.textContent = 'FitMind AI is thinking...';
+            chatContainer.appendChild(loadingMessage);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            try {
+                // System prompt describing AI role and user stories
+                const systemPrompt = `
+You are FitMind AI, a knowledgeable and supportive fitness coach.
+Respond concisely and with evidence-based advice under 200 words.
+Handle the following user queries:
+- Training programs and routines
+- Reps/sets suggestions based on goals
+- Nutrition advice, calorie and meal composition
+- Motivation and support
+- Customer support and app improvement guidance
+- Assisting users in manually creating workout/diet routines
+Be encouraging, professional, and actionable.
+            `;
+
+                // Call OpenAI API directly from browser
+                const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${OPENAI_API_KEY}`
+                    },
+                    body: JSON.stringify({
+                        model: "gpt-3.5-turbo",
+                        messages: [{ role: "system", content: systemPrompt }, ...conversation],
+                        max_tokens: 300
+                    })
+                });
+
+                const data = await response.json();
+                if (data.error) throw new Error(data.error.message);
+
+                // Enforce 200-word maximum
+                let aiText = data.choices[0].message.content.trim();
+                const words = aiText.split(/\s+/);
+                if (words.length > 200) aiText = words.slice(0, 200).join(' ') + '...';
+                const wordCount = Math.min(words.length, 200);
+
+                // Remove loading placeholder
+                chatContainer.removeChild(loadingMessage);
+
+                // Display AI message with typing animation
+                await typeMessage(aiText, wordCount);
+
+                // Store AI message in conversation history
+                conversation.push({ role: 'assistant', content: aiText });
+
+            } catch (err) {
+                // Show error in chat if API call fails
+                chatContainer.removeChild(loadingMessage);
+                addMessage(`Error: ${err.message}`, 'ai');
+            } finally {
+                sendBtn.disabled = false;
+            }
+        }
+
+        // -------------------
+        // Typing Animation for AI responses
+        // -------------------
+        async function typeMessage(text, wordCount) {
+            const msgDiv = document.createElement('div');
+            msgDiv.classList.add('message', 'ai');
+            chatContainer.appendChild(msgDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            // Simulate typing character by character
+            for (let i = 0; i < text.length; i++) {
+                msgDiv.textContent += text[i];
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+                await new Promise(r => setTimeout(r, 15));
+            }
+
+            // Add word count and support buttons after typing completes
+            const metaDiv = document.createElement('div');
+            metaDiv.classList.add('response-meta');
+            metaDiv.innerHTML = `Word count: ${wordCount}`;
+
+            const supportDiv = document.createElement('div');
+            supportDiv.classList.add('support-buttons');
+            supportDiv.innerHTML = `
+            <button onclick="alert('Thanks for supporting!')">Support</button>
+            <button onclick="alert('Thanks for feedback!')">Don't Support</button>
+        `;
+            msgDiv.appendChild(metaDiv);
+            msgDiv.appendChild(supportDiv);
+        }
+
+        // -------------------
+        // Event Listener: send message on Enter key
+        // -------------------
+        userInput.addEventListener('keypress', e => { if (e.key === 'Enter') sendMessage(); });
+    </script>
+
+</body>
+</html>
