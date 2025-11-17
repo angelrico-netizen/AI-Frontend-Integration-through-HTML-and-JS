@@ -70,3 +70,86 @@ Course: CS1200 - [University of Texas at Dallas]
 Role: AI Integration & Front-End Implementation
 
 -----------------------------------------------------
+README.txt - FitMind AI Chatbot (React Native Component)
+--------------------------------------------------------
+
+Project Overview:
+-----------------
+FitMind AI is a **fitness-focused AI chatbot** implemented as a **React Native component**.  
+This component allows users to interact with OpenAI’s API directly within a mobile app, providing fitness 
+guidance, nutrition advice, motivation, and customer support.
+
+Purpose:
+--------
+This project demonstrates the developer’s role in **integrating AI into a front-end interface**, supporting the following user stories:
+
+1. Users can ask about training regimens and programs.
+2. Users can request reps/sets recommendations according to goals and training type.
+3. Users can ask for best foods/diets based on their weight/body goals.
+4. AI can provide nutrition guidance, including calorie counts and meal composition.
+5. Users can receive motivation and support.
+6. Users can manually create workout/diet routines.
+7. AI supports customer queries about app improvements.
+8. AI responses are **limited to 200 words maximum**.
+
+File Description:
+-----------------
+1. **FitMindAI.js**:
+   - React Native functional component implementing the chatbot interface.
+   - Handles **state management** for conversation history, user input, and loading state.
+   - Integrates with OpenAI API using `fetch()` to get AI responses directly.
+   - Implements **canned questions** for quick queries and allows custom user input.
+   - Displays **chat messages**, **word count**, and **support/feedback buttons**.
+   - Fully styled with **mint green (#A8E6CF) and black theme** for a clean, modern UI.
+   - Works on **iOS and Android devices**.
+
+Key Features:
+-------------
+- **Canned Questions:** Quick buttons for common queries like “Beginner Workout” or “Nutrition Advice”.
+- **Custom Questions:** Users can type personalized queries.
+- **AI Integration:** Calls OpenAI API from the app to provide real-time responses.
+- **Chat UI:** User messages appear on the right, AI responses on the left, mimicking modern messaging apps.
+- **Support Feedback:** “Support” and “Don't Support” buttons under AI messages for visual feedback.
+- **Word Count:** AI responses are capped at 200 words with the count displayed.
+- **Clear Chat:** Reset the conversation at any time.
+- **Loading State:** Displays “FitMind AI is thinking…” while awaiting response.
+
+Setup Instructions:
+-------------------
+1. Ensure you have **React Native environment** set up:
+   - Node.js, npm/yarn
+   - React Native CLI or Expo CLI
+   - Android Studio or Xcode for device/emulator
+2. **Add the component to your project**:
+   - Copy `FitMindAI.js` into your `components` folder.
+   - Import it: `import FitMindAI from './components/FitMindAI';`
+3. **Insert the component in your app**:
+   ```jsx
+   export default function App() {
+       return (
+           <FitMindAI />
+       );
+   }
+Set your OpenAI API key:
+
+Replace OPENAI_API_KEY in the component with your key.
+
+Example:
+
+js
+Copy code
+const OPENAI_API_KEY = 'YOUR_API_KEY_HERE';
+Run the app:
+
+iOS: npx react-native run-ios
+
+Android: npx react-native run-android
+
+Interact with the AI using canned questions or by typing a custom message.
+
+Notes:
+API key is stored in memory; for production apps, always use a secure backend.
+
+AI responses are limited to 200 words to maintain readability and relevance.
+
+Designed for mobile-first experience, fully responsive on iOS and Android devices.
