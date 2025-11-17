@@ -65,8 +65,8 @@ Notes:
 
 Credits:
 --------
-Developed by: [Your Name]  
-Course: CS1200 - [University/High School Name]  
+Developed by: [Angel Rico]  
+Course: CS1200 - [University of Texas at Dallas]  
 Role: AI Integration & Front-End Implementation
 
 -----------------------------------------------------
