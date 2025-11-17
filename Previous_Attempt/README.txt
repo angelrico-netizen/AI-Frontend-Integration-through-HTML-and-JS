@@ -1,0 +1,1 @@
+This is my previous attempt at creating my own frontend code in order to succesffully integrate AI into it. Frontend was not provided on time, so I decided to create my own frontend coding systems in both HTML and JS for React Native.
